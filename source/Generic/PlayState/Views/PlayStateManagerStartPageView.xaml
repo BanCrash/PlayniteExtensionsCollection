@@ -11,6 +11,7 @@
         <Style TargetType="TextBlock" BasedOn="{StaticResource BaseTextBlockStyle}" />
         <con:SuspendModeToStringConverter x:Key="SuspendModeToStringConverter" />
         <con:BoolToYesNoConverter x:Key="BoolToYesNoConverter" />
+        <con:StatusToStringConverter x:Key="StatusToStringConverter" />
     </UserControl.Resources>
     <Grid>
         <ScrollViewer>

@@ -12,6 +12,7 @@
             <Style TargetType="TextBlock" BasedOn="{StaticResource BaseTextBlockStyle}" />
             <con:SuspendModeToStringConverter x:Key="SuspendModeToStringConverter" />
             <con:BoolToYesNoConverter x:Key="BoolToYesNoConverter" />
+            <con:StatusToStringConverter x:Key="StatusToStringConverter" />
         </Grid.Resources>
         <ScrollViewer>
             <StackPanel>
@@ -79,7 +80,22 @@
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>
-                                
+
+                                <GridViewColumn Width="0"  Header="{DynamicResource LOCPlayState_ManagerStatusLabel}">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock VerticalAlignment="Center">
+                                                <TextBlock.Text>
+                                                    <MultiBinding Converter="{StaticResource StatusToStringConverter}">
+                                                        <Binding Path="SuspendMode" />
+                                                        <Binding Path="IsSuspended" />
+                                                    </MultiBinding>
+                                                </TextBlock.Text>
+                                            </TextBlock>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+
                                 <GridViewColumn Width="Auto" Header="{DynamicResource LOCPlayState_ManagerGridHeaderActionsLabel}">
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
