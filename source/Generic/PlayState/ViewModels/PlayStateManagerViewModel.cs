@@ -121,6 +121,13 @@ namespace PlayState.ViewModels
                     playstateData.HasBeenInForeground = true;
                 }
 
+                if (playstateData.IsGameStatusOverrided &&
+                    (isForeground && playstateData.GameStatusOverride == PlayStateDataStatus.Running ||
+                    !isForeground && playstateData.GameStatusOverride == PlayStateDataStatus.Paused))
+                {
+                    playstateData.IsGameStatusOverrided = false;
+                }
+
                 if (!ContinueAutomaticStateExecution(playstateData, isForeground))
                 {
                     continue;
@@ -128,13 +135,21 @@ namespace PlayState.ViewModels
 
                 if (isForeground == playstateData.IsSuspended)
                 {
-                    SwitchGameState(playstateData);
+                    SwitchGameState(playstateData, false);
                 }
             }
         }
 
         private bool ContinueAutomaticStateExecution(PlayStateData playstateData, bool isForeground)
         {
+            // We check first if the game status has been override, and if so we don't automatically change the state until the override is gone
+            // This is made because if you manually suspend the game, PlayState will automatically resume it again if the game is in the foreground,
+            // or if you manually resume the game, PlayState will automatically suspend it again if the game is not in the foreground.
+            if (playstateData.IsGameStatusOverrided)
+            {
+                return false;
+            }
+
             if (playstateData.SuspendMode != SuspendModes.Processes)
             {
                 return true;
@@ -402,7 +417,7 @@ namespace PlayState.ViewModels
             }
         }
 
-        public bool SwitchGameState(PlayStateData gameData)
+        public bool SwitchGameState(PlayStateData gameData, bool isGameStatusOverrided = true)
         {
             var handled = false;
             try
@@ -438,9 +453,14 @@ namespace PlayState.ViewModels
                         notificationType = processesSuspended ? NotificationTypes.Resumed : NotificationTypes.PlaytimeResumed;
                         gameData.Stopwatch.Stop();
                         logger.Debug($"Game {gameData.Game.Name} resumed in mode {gameData.SuspendMode}");
-                        if (settings.Settings.NotificationShowSuspendedReminder)
+												if (settings.Settings.NotificationShowSuspendedReminder)
                         {
                             gameData.SetReminderTimer();
+												}
+                        if (isGameStatusOverrided)
+                        {
+                            gameData.IsGameStatusOverrided = true;
+                            gameData.GameStatusOverride = PlayStateDataStatus.Running;
                         }
                     }
                     else
@@ -454,6 +474,11 @@ namespace PlayState.ViewModels
                             gameData.ReminderTimer.Tick += (sender, e) => ShowNotificationReminderIfCurrentGameIsSuspended(gameData);
                         }
                         logger.Debug($"Game {gameData.Game.Name} suspended in mode {gameData.SuspendMode}");
+                        if (isGameStatusOverrided)
+                        {
+                            gameData.IsGameStatusOverrided = true;
+                            gameData.GameStatusOverride = PlayStateDataStatus.Paused;
+                        }
                     }
                 }
 
@@ -489,7 +514,7 @@ namespace PlayState.ViewModels
             {
                 return;
             }
-            
+
             var foregroundWindowHandle = WindowsHelper.GetForegroundWindowHandle();
 
             // Check if game window is already in foreground
