@@ -98,18 +98,16 @@ namespace PlayState.Models
             }
         }
 
-        public void SetReminderTimer()
+        public void StartReminderTimer()
         {
-            if (ReminderTimer.IsEnabled)
-            {
-                ReminderTimer.Stop();
-            }
-            else
-            {
-                ReminderTimer = new DispatcherTimer();
-                ReminderTimer.Interval = TimeSpan.FromMinutes(1);
-                ReminderTimer.Start();
-            }
+            ReminderTimer = new DispatcherTimer();
+            ReminderTimer.Interval = TimeSpan.FromMinutes(2);
+            ReminderTimer.Start();
+        }
+
+        public void StopReminderTimer()
+        {
+            ReminderTimer.Stop();
         }
     }
 }

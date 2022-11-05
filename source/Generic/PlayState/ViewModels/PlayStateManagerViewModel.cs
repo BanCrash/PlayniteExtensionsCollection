@@ -455,7 +455,7 @@ namespace PlayState.ViewModels
                         logger.Debug($"Game {gameData.Game.Name} resumed in mode {gameData.SuspendMode}");
 												if (settings.Settings.NotificationShowSuspendedReminder)
                         {
-                            gameData.SetReminderTimer();
+                            gameData.StopReminderTimer();
 												}
                         if (isGameStatusOverrided)
                         {
@@ -470,7 +470,7 @@ namespace PlayState.ViewModels
                         gameData.Stopwatch.Start();
                         if (settings.Settings.NotificationShowSuspendedReminder)
                         {
-                            gameData.SetReminderTimer();
+                            gameData.StartReminderTimer();
                             gameData.ReminderTimer.Tick += (sender, e) => ShowNotificationReminderIfCurrentGameIsSuspended(gameData);
                         }
                         logger.Debug($"Game {gameData.Game.Name} suspended in mode {gameData.SuspendMode}");
