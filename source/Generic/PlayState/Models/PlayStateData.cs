@@ -81,6 +81,7 @@ namespace PlayState.Models
 
         public void Dispose()
         {
+            ReminderTimer.Stop();
             Game.PropertyChanged -= Game_PropertyChanged;
             settingsModel.Settings.PropertyChanged -= Settings_PropertyChanged;
         }

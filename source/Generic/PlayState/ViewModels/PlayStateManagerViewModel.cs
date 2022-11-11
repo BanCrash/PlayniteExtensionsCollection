@@ -402,7 +402,7 @@ namespace PlayState.ViewModels
 
         public void ShowNotificationReminderIfCurrentGameIsSuspended(PlayStateData gameData)
         {
-            if (GetIsCurrentGameSame(gameData.Game))
+            if (GetIsCurrentGameSame(gameData.Game) && gameData.IsSuspended)
             {
                 ShowCurrentGameStatusNotification();
             }
